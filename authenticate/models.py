@@ -6,6 +6,7 @@ class Application(db.Model):
   __tablename__ = 'applications'
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(80), unique=True)
+  key = db.Column(db.Text)
   creator = db.Column(db.String(80))
   owner = db.Column(db.String(80))
   create_date = db.Column(db.DateTime, default=db.func.now())
@@ -19,7 +20,7 @@ class AccessLog(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   application_id = db.Column(db.Integer, db.ForeignKey('applications.id'))
   time = db.Column(db.DateTime, default=db.func.now())
-  certificate_info = db.Column(db.Text, nullable=True)
+  certificate_info = db.Column(db.Text)
 
   application = db.relationship('Application', back_populates='access_logs')
 

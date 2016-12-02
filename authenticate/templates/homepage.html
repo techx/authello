@@ -8,7 +8,8 @@
     <meta name="author" content="">
 
     <!-- CSS -->
-    <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap-responsive.min.css') }}" rel="stylesheet">
     <style type="text/css">
 
       /* Sticky footer styles
@@ -63,7 +64,6 @@
       }
 
     </style>
-    <link href="/assets/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
   </head>
 
   <body>
@@ -73,7 +73,6 @@
           <h1>authenticate.mit.edu</h1>
         </div>
         <p class="lead">An authentication service to allow MIT webapps to authenticate people with MIT certificates.</p>
-        <p class="text-center"><a href="/app/" class="btn btn-success">Manage Your Apps</a></p>
         <p>More description to come.</p>
       </div>
 
@@ -87,7 +86,7 @@
     </div>
 
     <script src="//code.jquery.com/jquery.js"></script>
-    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
   </body>
 </html>

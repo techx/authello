@@ -22,7 +22,7 @@ class Application(db.Model):
     name = name.lower()
     if not is_valid_application_name(name):
       return None
-    result = Application.query.find(Application.name == name).all()
+    results = Application.query.filter(Application.name == name).all()
     if len(results) == 0:
       return None
     assert len(results) == 1

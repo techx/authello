@@ -1,125 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>techx-authenticate</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="An authentication service to allow MIT webapps to authenticate people with MIT certificates.">
-    <meta name="author" content="">
+{% extends "layout.html" %}
 
-    <!-- CSS -->
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/bootstrap-responsive.min.css') }}" rel="stylesheet">
-    <style type="text/css">
-
-      /* Sticky footer styles
-      -------------------------------------------------- */
-
-      html,
-      body {
-        height: 100%;
-        /* The html and body elements cannot have any padding or margin. */
-      }
-
-      /* Wrapper for page content to push down footer */
-      #wrap {
-        min-height: 100%;
-        height: auto !important;
-        height: 100%;
-        /* Negative indent footer by it's height */
-        margin: 0 auto -60px;
-      }
-
-      /* Set the fixed height of the footer here */
-      #push,
-      #footer {
-        height: 60px;
-      }
-      #footer {
-        background-color: #f5f5f5;
-      }
-
-      /* Lastly, apply responsive CSS fixes as necessary */
-      @media (max-width: 767px) {
-        #footer {
-          margin-left: -20px;
-          margin-right: -20px;
-          padding-left: 20px;
-          padding-right: 20px;
-        }
-      }
-
-
-
-      /* Custom page CSS
-      -------------------------------------------------- */
-      /* Not required for template or sticky footer method. */
-
-      .container {
-        width: auto;
-        max-width: 680px;
-      }
-      .container .credit {
-        margin: 20px 0;
-      }
-
-    </style>
-  </head>
-
-  <body>
-    <div id="wrap">
-      <div class="container">
-        <div class="page-header">
-          <h1>techx-authenticate</h1>
-        </div>
-        <p>A simple service to allow MIT webapps to authenticate students with MIT certificates.</p>
-        <h3>How to use</h3>
-        <p>In progress. The most important section!</p>
-        <h3>Design Goals</h3>
-        <p>There are three major design goals as we build this service:</p>
-        <ol>
-          <li>Developer Easy of Use</li>
-          <li>Simple Flow</li>
-          <li>Basic Security</li>
-        </ol>
-        <p><strong>Developer Easy of Use</strong> essentially means that the overhead for integrating this service into a new or existing application should be very low. There should be no need for extra dependencies or any assumptions made about the host application’s design. In addition, This design goal is the most important out of the three.</p>
-        <p><strong>Simple Flow</strong> means that a user being authenticated by this service should have no questions as to what they should do while being authenticate. One design decision made from this goal was that users are only asked for their certificates, not for their username and password or for kerberos tickets.</p>
-        <p><strong>Basic Security</strong> means this service should not allow adversaries to forge the identity of someone else when authenticating through this service. <em>This service does not aim to provide bulletproof security from an adversary once a user has been authenticated. It is up to the receiving application to properly handle someone’s authentication.</em></p>
-        <h3>Authentication Flow</h3>
-        <p>There are two parts to the authentication flow. One takes place online when creating the webapp, the other happens when a user wants to log in.</p>
-        <p><strong>Offline Steps</strong></p>
-        <ol>
-          <li>The application creator creates a new application on this service, providing:</li>
-        </ol>
-        <ul>
-          <li>A return URL: <code>RETURN_URL</code></li>
-          <li>An application name: <code>APP_NAME</code></li>
-        </ul>
-        <ol start="2">
-          <li>The application creator receives a secret key <code>SECRET_KEY</code> and stores it somewhere private.</li>
-        </ol>
-        <p><strong>Online Steps</strong></p>
-        <ol>
-          <li>A user visits the host application, and signals the intent to authenticate.</li>
-          <li>The host application redirects the user to <code>https://(techx-authenticate URL)/auth/(APP_NAME)</code></li>
-          <li>The user is asked for a certificate, which is presented to this service.</li>
-          <li>This service calculates <code>SHA256((user's kerberos) + (current time) + SECRET_KEY)</code>, also known as the <code>TOKEN</code></li>
-          <li>This service redirects the user back to <code>https://RETURN_URL?time=(current time)&amp;user=(user's kerberos)&amp;token=(TOKEN)</code></li>
-          <li>The host application verifies the token is valid by performing the same calculation as this service, as well as checks to see if the time variable presented is within 5 seconds of the current time.</li>
-          <li>The host application has received a valid authentication and logs the user in.</li>
-        </ol>
-      </div>
-      <div id="push"></div>
-    </div>
-
-    <div id="footer">
-      <div class="container">
-        <p class="muted credit">A service run by <a href="http://techx.mit.edu">MIT TechX</a>, made by <a href="https://twitter.com/Detry322">Jack Serrino</a>.</p>
-      </div>
-    </div>
-
-    <script src="//code.jquery.com/jquery.js"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-
-  </body>
-</html>
+{% block content %}
+  <div class="page-header">
+    <h1>techx-authenticate</h1>
+  </div>
+  <p>A simple service to allow MIT webapps to authenticate students with MIT certificates.</p>
+  <h3>How to use</h3>
+  <p>In progress. The most important section!</p>
+  <h3>Design Goals</h3>
+  <p>There are three major design goals as we build this service:</p>
+  <ol>
+    <li>Developer Easy of Use</li>
+    <li>Simple Flow</li>
+    <li>Basic Security</li>
+  </ol>
+  <p><strong>Developer Easy of Use</strong> essentially means that the overhead for integrating this service into a new or existing application should be very low. There should be no need for extra dependencies or any assumptions made about the host application’s design. In addition, This design goal is the most important out of the three.</p>
+  <p><strong>Simple Flow</strong> means that a user being authenticated by this service should have no questions as to what they should do while being authenticate. One design decision made from this goal was that users are only asked for their certificates, not for their username and password or for kerberos tickets.</p>
+  <p><strong>Basic Security</strong> means this service should not allow adversaries to forge the identity of someone else when authenticating through this service. <em>This service does not aim to provide bulletproof security from an adversary once a user has been authenticated. It is up to the receiving application to properly handle someone’s authentication.</em></p>
+  <h3>Authentication Flow</h3>
+  <p>There are two parts to the authentication flow. One takes place online when creating the webapp, the other happens when a user wants to log in.</p>
+  <p><strong>Offline Steps</strong></p>
+  <ol>
+    <li>The application creator creates a new application on this service, providing:</li>
+  </ol>
+  <ul>
+    <li>A return URL: <code>RETURN_URL</code></li>
+    <li>An application name: <code>APP_NAME</code></li>
+  </ul>
+  <ol start="2">
+    <li>The application creator receives a secret key <code>SECRET_KEY</code> and stores it somewhere private.</li>
+  </ol>
+  <p><strong>Online Steps</strong></p>
+  <ol>
+    <li>A user visits the host application, and signals the intent to authenticate.</li>
+    <li>The host application redirects the user to <code>https://(techx-authenticate URL)/auth/(APP_NAME)</code></li>
+    <li>The user is asked for a certificate, which is presented to this service.</li>
+    <li>This service calculates <code>SHA256((user's kerberos) + (current time) + SECRET_KEY)</code>, also known as the <code>TOKEN</code></li>
+    <li>This service redirects the user back to <code>https://RETURN_URL?time=(current time)&amp;user=(user's kerberos)&amp;token=(TOKEN)</code></li>
+    <li>The host application verifies the token is valid by performing the same calculation as this service, as well as checks to see if the time variable presented is within 5 seconds of the current time.</li>
+    <li>The host application has received a valid authentication and logs the user in.</li>
+  </ol>
+{% endblock %}

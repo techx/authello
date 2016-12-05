@@ -9,14 +9,17 @@ def login_required(f):
   @wraps(f)
   def decorated_function(*args, **kwargs):
     if 'kerberos' not in session:
-      return redirect(url_for('login_redirect', next=request.url))
+      return redirect(url_for('login', next=request.url))
     return f(*args, **kwargs)
   return decorated_function
 
 
 @app.route('/manage/login')
-def login_redirect():
-  return redirect(url_for('handle_auth_request', application_name=APP_NAME, next=request.args['next']))
+def login():
+  if 'next' in request.args:
+    return redirect(url_for('handle_auth_request', application_name=APP_NAME, next=request.args['next']))
+  else:
+    return redirect(url_for('handle_auth_request', application_name=APP_NAME))
 
 
 @app.route('/manage/login_return')
@@ -30,7 +33,7 @@ def login_return():
     return "Login was unsuccessful: " + err_msg, 400
   session['kerberos'] = request.args['kerberos']
   session['acting_as'] = request.args['kerberos']
-  return redirect(request.args['next'])
+  return redirect(request.args['next'] if 'next' in request.args else url_for('index'))
 
 
 @app.route('/manage/logout')
@@ -48,4 +51,4 @@ def index():
 @app.route('/manage/')
 @login_required
 def manage_index():
-  return "You are logged in " + session['kerberos']
+  return render_template('manage.html')

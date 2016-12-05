@@ -2,14 +2,15 @@ import datetime
 import os
 
 from authenticate import app, db
-from authenticate.helpers import is_valid_application_name
+from authenticate.helpers import is_valid_application_id
 
 class Application(db.Model):
   __tablename__ = 'applications'
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String(80), index=True, unique=True)
+  _id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(80))
   return_url = db.Column(db.Text)
-  secret = db.Column(db.Text)
+  id = db.Column(db.String(64), index=True, unique=True)
+  secret = db.Column(db.String(64))
   creator = db.Column(db.String(80))
   owner = db.Column(db.String(80))
   create_date = db.Column(db.DateTime, default=db.func.now())
@@ -18,20 +19,19 @@ class Application(db.Model):
   access_logs = db.relationship('AccessLog', back_populates='application')
 
   @classmethod
-  def find_by_name(cls, name):
-    name = name.lower()
-    if not is_valid_application_name(name):
+  def find_by_id(cls, id):
+    if not is_valid_application_id(id):
       return None
-    results = Application.query.filter(Application.name == name).all()
+    results = Application.query.filter(Application.id == id).all()
     if len(results) == 0:
       return None
     assert len(results) == 1
     return results[0]
 
   def __init__(self, name, return_url, creator):
-    assert is_valid_application_name(name)
-    self.name = name.lower()
+    self.name = name
     self.return_url = return_url
+    self.id = os.urandom(16).encode('hex')
     self.secret = os.urandom(32).encode('hex')
     self.creator = creator
     self.owner = creator

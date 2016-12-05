@@ -15,8 +15,11 @@ def verify_token(kerberos, req_time, secret, token):
     return False, 'Calculated token does not match'
   return True, None
 
-def is_valid_application_name(name):
-  return bool(re.match(r'^[a-z0-9_-]+$', name.lower()))
+def is_valid_application_id(id):
+  return bool(re.match(r'^[a-z0-9]+$', id))
+
+def is_valid_return_url(url):
+  return bool(re.match(r'^https?://[^\s]+$', url.lower()))
 
 def parse_certificate_dn(cert_info_string):
   return {

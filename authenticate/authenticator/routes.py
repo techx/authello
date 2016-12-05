@@ -5,7 +5,7 @@ from urllib import urlencode
 
 from authenticate import app, db
 from authenticate.models import Application, AccessLog
-from authenticate.helpers import calculate_token, is_valid_application_name, parse_certificate_dn
+from authenticate.helpers import calculate_token, parse_certificate_dn
 
 def construct_redirect_url(url_base, request_args, new_params):
   url_parts = list(urlparse(url_base))
@@ -18,9 +18,9 @@ def construct_redirect_url(url_base, request_args, new_params):
   url_parts[4] = urlencode(query)
   return urlunparse(url_parts)
 
-@app.route('/auth/<application_name>')
-def handle_auth_request(application_name):
-  application = Application.find_by_name(application_name)
+@app.route('/auth/<application_id>')
+def handle_auth_request(application_id):
+  application = Application.find_by_id(application_id)
   if not application:
     return "Could not find the given application :(", 404
   certificate_info_str = request.headers.get('x-certificate-info')

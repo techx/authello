@@ -2,6 +2,59 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>Manage your apps</h1>
+  <h1>Manage your apps</h1>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Application Name</th>
+      <th>Application ID</th>
+      <th>Return URL</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if applications|length > 0 %}
+      {% for application in applications|sort(attribute='name') %}
+        <tr>
+          <td>{{ application.name }}</td>
+          <td><code>{{ application.id }}</code></td>
+          <td>{{ application.return_url }}</td>
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="2">You don't have any applications yet. Make one below!</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+
+<h3>Create a new application</h3>
+<form class="form-horizontal" id="createForm" action="{{ url_for('create_application') }}" method='POST'>
+  <div class="control-group">
+    <label class="control-label" for="inputAppName">Application Name</label>
+    <div class="controls">
+      <input type="text" id="inputAppName" placeholder="Application Name" name="name">
+    </div>
   </div>
+  <div class="control-group">
+    <label class="control-label" for="inputRetURL">Return URL</label>
+    <div class="controls">
+      <input type="text" id="inputRetURL" placeholder="Return URL" name="return_url">
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <button type="submit" class="btn">Create Application</button>
+    </div>
+  </div>
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/jquery.validate.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery-validate.bootstrap-tooltip.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/manage.js') }}"></script>
 {% endblock %}

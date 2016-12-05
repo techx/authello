@@ -1,8 +1,8 @@
-from flask import render_template, redirect, request, session, url_for
+from flask import render_template, redirect, request, session, url_for, jsonify
 from functools import wraps
 
-from authenticate import app, APP_NAME
-from authenticate.helpers import verify_token
+from authenticate import app, db, APP_ID
+from authenticate.helpers import verify_token, is_valid_application_id, is_valid_return_url
 from authenticate.models import Application
 
 def login_required(f):
@@ -17,14 +17,14 @@ def login_required(f):
 @app.route('/manage/login')
 def login():
   if 'next' in request.args:
-    return redirect(url_for('handle_auth_request', application_name=APP_NAME, next=request.args['next']))
+    return redirect(url_for('handle_auth_request', application_id=APP_ID, next=request.args['next']))
   else:
-    return redirect(url_for('handle_auth_request', application_name=APP_NAME))
+    return redirect(url_for('handle_auth_request', application_id=APP_ID))
 
 
 @app.route('/manage/login_return')
 def login_return():
-  secret = Application.query.filter(Application.name == APP_NAME).one().secret
+  secret = Application.find_by_id(APP_ID).secret
   success, err_msg = verify_token(request.args['kerberos'],
                                   request.args['time'],
                                   secret,
@@ -51,4 +51,17 @@ def index():
 @app.route('/manage/')
 @login_required
 def manage_index():
-  return render_template('manage.html')
+  applications = Application.query.filter(Application.owner == session['acting_as']).all()
+  return render_template('manage.html', applications=applications)
+
+
+@app.route('/manage/create', methods=['POST'])
+@login_required
+def create_application():
+  name = request.form['name']
+  return_url = request.form['return_url']
+  assert is_valid_return_url(return_url)
+  application = Application(name, return_url, session['acting_as'])
+  db.session.add(application)
+  db.session.commit()
+  return render_template('application_created.html', application=application)

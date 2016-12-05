@@ -4,7 +4,7 @@ app = Flask(__name__)
 app.config.from_object('authenticate.config.ProductionConfig')
 db = SQLAlchemy(app)
 
-APP_NAME = 'techx-authenticate'
+APP_ID = '00000000000000000000000000000000'
 
 import authenticate.authenticator
 import authenticate.manager

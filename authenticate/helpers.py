@@ -23,5 +23,6 @@ def is_valid_return_url(url):
 
 def parse_certificate_dn(cert_info_string):
   return {
-    'kerberos': 'jserrino'
+    'name': re.search(r'CN=([^/]+)', cert_info_string).group(1),
+    'kerberos': re.search(r'emailAddress=([^@]+)@MIT.EDU', cert_info_string).group(1)
   }

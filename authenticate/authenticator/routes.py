@@ -25,8 +25,7 @@ def handle_auth_request(application_id):
     return "Could not find the given application :(", 404
   certificate_info_str = request.headers.get('x-certificate-info')
   if app.debug and not certificate_info_str:
-    # TODO: Make this an actual dummy string
-    certificate_info_str = ''
+    certificate_info_str = '/C=US/ST=Massachusetts/O=Massachusetts Institute of Technology/OU=Client CA v1/CN=Jack S Serrino/emailAddress=jserrino@MIT.EDU'
 
   certificate_info = parse_certificate_dn(certificate_info_str)
 

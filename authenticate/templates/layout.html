@@ -94,11 +94,7 @@
                 <li {% if request.endpoint != 'index' %}class="active"{% endif %}><a href="{{ url_for('manage_index') }}">Manage</a></li>
               </ul>
               <ul class="nav navbar-nav pull-right">
-                {% if session.kerberos %}
-                  <li><a href="{{ url_for('logout') }}">Log out {{ session.kerberos }}</a></li>
-                {% else %}
-                  <li><a href="{{ url_for('login') }}">Log in</a></li>
-                {% endif %}
+                <li><a href="#">Logged in as {{ g.current_owner.kerberos }}</a></li>
               </ul>
             </div><!--/.nav-collapse -->
           </div>

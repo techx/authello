@@ -1,47 +1,13 @@
-from flask import render_template, redirect, request, session, url_for, jsonify
-from functools import wraps
+import re
+from flask import render_template, request, g, redirect, url_for, Response
 
-from authenticate import app, db, APP_ID
-from authenticate.helpers import verify_token, is_valid_application_id, is_valid_return_url
-from authenticate.models import Application
+from authenticate import app, db
+from authenticate.helpers import verify_token
+from authenticate.models import Application, Owner, AccessLog
+from authenticate.helpers import parse_certificate_dn
 
-def login_required(f):
-  @wraps(f)
-  def decorated_function(*args, **kwargs):
-    if 'kerberos' not in session:
-      return redirect(url_for('login', next=request.url))
-    return f(*args, **kwargs)
-  return decorated_function
-
-
-@app.route('/manage/login')
-def login():
-  if 'next' in request.args:
-    return redirect(url_for('handle_auth_request', application_id=APP_ID, next=request.args['next']))
-  else:
-    return redirect(url_for('handle_auth_request', application_id=APP_ID))
-
-
-@app.route('/manage/login_return')
-def login_return():
-  secret = Application.find_by_id(APP_ID).secret
-  success, err_msg = verify_token(request.args['kerberos'],
-                                  request.args['time'],
-                                  secret,
-                                  request.args['token'])
-  if not success:
-    return "Login was unsuccessful: " + err_msg, 400
-  session['kerberos'] = request.args['kerberos']
-  session['acting_as'] = request.args['kerberos']
-  return redirect(request.args['next'] if 'next' in request.args else url_for('index'))
-
-
-@app.route('/manage/logout')
-def logout():
-  session.pop('kerberos', None)
-  session.pop('acting_as', None)
-  return redirect(url_for('index'))
-
+def is_valid_return_url(url):
+  return bool(re.match(r'^https?://[^\s]+$', url.lower()))
 
 @app.route('/')
 def index():
@@ -49,19 +15,37 @@ def index():
 
 
 @app.route('/manage/')
-@login_required
 def manage_index():
-  applications = Application.query.filter(Application.owner == session['acting_as']).all()
+  applications = Application.query.filter(Application.owner == g.current_owner).all()
   return render_template('manage.html', applications=applications)
 
 
 @app.route('/manage/create', methods=['POST'])
-@login_required
 def create_application():
   name = request.form['name']
   return_url = request.form['return_url']
   assert is_valid_return_url(return_url)
-  application = Application(name, return_url, session['acting_as'])
+  application = Application(name, return_url, g.current_owner)
   db.session.add(application)
   db.session.commit()
   return render_template('application_created.html', application=application)
+
+@app.route('/manage/<application_id>/delete', methods=['POST'])
+def delete_application(application_id):
+  application = Application.find_by_id(application_id)
+  db.session.delete(application)
+  db.session.commit()
+  return redirect(url_for('manage_index'))
+
+@app.route('/manage/<application_id>/logs', methods=['GET'])
+def application_log(application_id):
+  limit = int(request.args.get('limit', 100))
+  application = Application.find_by_id(application_id)
+  logs = AccessLog.query.filter(AccessLog.application == application).order_by(AccessLog.time.desc()).limit(limit).all()
+  result = ""
+  for log in logs:
+    result += "{},{}".format(log.time, parse_certificate_dn(log.certificate_info)['kerberos'])
+  if result == "":
+    result = "No information to display!"
+  return Response(result, mimetype='text/plain')
+

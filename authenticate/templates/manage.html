@@ -11,20 +11,31 @@
       <th>Application Name</th>
       <th>Application ID</th>
       <th>Return URL</th>
+      <th>Delete</th>
     </tr>
   </thead>
   <tbody>
     {% if applications|length > 0 %}
       {% for application in applications|sort(attribute='name') %}
         <tr>
-          <td>{{ application.name }}</td>
+          <td><a href="{{ url_for('application_log', application_id=application.id, limit=100) }}">{{ application.name }}</a></td>
           <td><code>{{ application.id }}</code></td>
           <td>{{ application.return_url }}</td>
+          <td>
+            <form
+              inline
+              action="{{ url_for('delete_application', application_id=application.id) }}"
+              method="POST"
+              onsubmit="return confirm('Are you sure?')"
+              style="margin: 0">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </td>
         </tr>
       {% endfor %}
     {% else %}
       <tr>
-        <td colspan="2">You don't have any applications yet. Make one below!</td>
+        <td colspan="4">You don't have any applications yet. Make one below!</td>
       </tr>
     {% endif %}
   </tbody>

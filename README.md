@@ -1,24 +1,6 @@
 # techx-authenticate
 A simple service to allow MIT webapps to authenticate students with MIT certificates.
 
-### How to use
-
-In progress. The most important section!
-
-### Design Goals
-
-There are three major design goals as we build this service:
-
-1. Developer Easy of Use
-2. Simple Flow
-3. Basic Security
-
-**Developer Easy of Use** essentially means that the overhead for integrating this service into a new or existing application should be very low. There should be no need for extra dependencies or any assumptions made about the host application's design. In addition, This design goal is the most important out of the three.
-
-**Simple Flow** means that a user being authenticated by this service should have no questions as to what they should do while being authenticate. One design decision made from this goal was that users are only asked for their certificates, not for their username and password or for kerberos tickets.
-
-**Basic Security** means this service should not allow adversaries to forge the identity of someone else when authenticating through this service. *This service does not aim to provide bulletproof security from an adversary once a user has been authenticated. It is up to the receiving application to properly handle someone's authentication.*
-
 ### Authentication Flow
 
 There are two parts to the authentication flow. One takes place online when creating the webapp, the other happens when a user wants to log in.
@@ -39,3 +21,23 @@ There are two parts to the authentication flow. One takes place online when crea
 5. This service redirects the user back to `https://RETURN_URL?time=(current time)&user=(user's kerberos)&token=(TOKEN)`
 6. The host application verifies the token is valid by performing the same calculation as this service, as well as checks to see if the time variable presented is within 5 seconds of the current time.
 7. The host application has received a valid authentication and logs the user in.
+
+### Design Goals
+
+There are three major design goals as we build this service (in order of priority):
+
+1. Developer Easy of Use
+2. Simple Flow
+3. Basic Security
+
+**Developer Easy of Use** essentially means that the overhead for integrating this service into a new or existing application should be very low. There should be no need for extra dependencies or any assumptions made about the host application's design. In addition, This design goal is the most important out of the three.
+
+**Simple Flow** means that a user being authenticated by this service should have no questions as to what they should do while being authenticate. One design decision made from this goal was that users are only asked for their certificates, not for their username and password or for kerberos tickets.
+
+**Basic Security** means this service should not allow adversaries to forge the identity of someone else when authenticating through this service. *This service does not aim to provide bulletproof security from an adversary once a user has been authenticated. It is up to the receiving application to properly handle someone's authentication.*
+
+### NOT Design Goals
+
+This project does not aim to provide a completely secure way to provide authentication to web applications. Most importantly, use of this service shows implicit trust in the operators of this website. It is possible for the owner of this website to authenticate as any user to the connected web applications, though we pledge not to do so. Furthermore, if this website's internal database were to be hacked, the hackers would be able to authenticate as well.
+
+Since the purpose of this tool is to make it easy for new developers to introduce basic authentication via certificates, these are trust considerations that we are okay with. *Once a web application has moved beyond proof-of-concept, the owners of that web application should work to directly accept certificates themselves, for better security.*

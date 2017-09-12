@@ -1,11 +1,11 @@
 from urlparse import parse_qsl, urlparse, urlunparse
 import time
-from flask import request, redirect
+from flask import request, redirect, g
 from urllib import urlencode
 
 from authenticate import app, db
 from authenticate.models import Application, AccessLog
-from authenticate.helpers import calculate_token, parse_certificate_dn
+from authenticate.helpers import calculate_token
 
 def construct_redirect_url(url_base, request_args, new_params):
   url_parts = list(urlparse(url_base))
@@ -23,17 +23,12 @@ def handle_auth_request(application_id):
   application = Application.find_by_id(application_id)
   if not application:
     return "Could not find the given application :(", 404
-  certificate_info_str = request.headers.get('x-certificate-info')
-  if app.debug and not certificate_info_str:
-    certificate_info_str = '/C=US/ST=Massachusetts/O=Massachusetts Institute of Technology/OU=Client CA v1/CN=Jack S Serrino/emailAddress=jserrino@MIT.EDU'
 
-  certificate_info = parse_certificate_dn(certificate_info_str)
-
-  log_entry = AccessLog(application, certificate_info_str)
+  log_entry = AccessLog(application, g.raw_certificate_info)
   db.session.add(log_entry)
   db.session.commit()
 
-  kerberos = certificate_info['kerberos']
+  kerberos = g.parsed_certificate_info['kerberos']
   cur_time = int(time.time())
   token = calculate_token(kerberos, cur_time, application.secret)
   new_params = {'token': token, 'kerberos': kerberos, 'time': cur_time}

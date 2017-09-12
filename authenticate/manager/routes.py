@@ -44,7 +44,7 @@ def application_log(application_id):
   logs = AccessLog.query.filter(AccessLog.application == application).order_by(AccessLog.time.desc()).limit(limit).all()
   result = ""
   for log in logs:
-    result += "{},{}".format(log.time, parse_certificate_dn(log.certificate_info)['kerberos'])
+    result += "{},{}\n".format(log.time, parse_certificate_dn(log.certificate_info)['kerberos'])
   if result == "":
     result = "No information to display!"
   return Response(result, mimetype='text/plain')

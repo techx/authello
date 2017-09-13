@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h1 id="techxauthenticate">techx-authenticate</h1>
+<h1 id="techxauthenticate">authello.mit.edu</h1>
 
 <p>A simple service to allow MIT webapps to authenticate students with MIT certificates.</p>
 
@@ -30,7 +30,7 @@
 <ol>
 <li>A user visits the host application, and signals the intent to authenticate.</li>
 
-<li>The host application redirects the user to <code>https://(techx-authenticate URL)/auth/(APP_NAME)</code></li>
+<li>The host application redirects the user to <code>https://authello.mit.edu/auth/(APP_NAME)</code></li>
 
 <li>The user is asked for a certificate, which is presented to this service.</li>
 

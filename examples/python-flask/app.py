@@ -44,7 +44,7 @@ def calculate_token(kerberos, cur_time, secret):
   return h.hexdigest()
 
 
-# Checks if a token returned from techx-authenticate is valid
+# Checks if a token returned from authello.mit.edu is valid
 def verify_token(kerberos, req_time, token):
   if abs(int(req_time) - time.time()) > 2:
     return False, 'Token is too old'

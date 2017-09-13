@@ -1,4 +1,4 @@
-# techx-authenticate
+# authello.mit.edu
 A simple service to allow MIT webapps to authenticate students with MIT certificates.
 
 ### Authentication Flow
@@ -15,7 +15,7 @@ There are two parts to the authentication flow. One takes place online when crea
 **Online Steps**
 
 1. A user visits the host application, and signals the intent to authenticate.
-2. The host application redirects the user to `https://(techx-authenticate URL)/auth/(APP_NAME)`
+2. The host application redirects the user to `https://authello.mit.edu/auth/(APP_NAME)`
 3. The user is asked for a certificate, which is presented to this service.
 4. This service calculates `SHA256((user's kerberos) + (current time) + SECRET_KEY)`, also known as the `TOKEN`
 5. This service redirects the user back to `https://RETURN_URL?time=(current time)&user=(user's kerberos)&token=(TOKEN)`

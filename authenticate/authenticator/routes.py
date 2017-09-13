@@ -18,9 +18,7 @@ def construct_redirect_url(url_base, request_args, new_params):
   url_parts[4] = urlencode(query)
   return urlunparse(url_parts)
 
-@app.route('/auth/<application_id>')
-def handle_auth_request(application_id):
-  application = Application.find_by_id(application_id)
+def log_in(application, kerberos):
   if not application:
     return "Could not find the given application :(", 404
 
@@ -28,8 +26,19 @@ def handle_auth_request(application_id):
   db.session.add(log_entry)
   db.session.commit()
 
-  kerberos = g.parsed_certificate_info['kerberos']
   cur_time = int(time.time())
   token = calculate_token(kerberos, cur_time, application.secret)
   new_params = {'token': token, 'kerberos': kerberos, 'time': cur_time}
   return redirect(construct_redirect_url(application.return_url, dict(request.args), new_params))
+
+@app.route('/auth/<application_id>')
+def handle_auth_request(application_id):
+  application = Application.find_by_id(application_id, unsafe_lookup=True)
+  kerberos = g.parsed_certificate_info['kerberos']
+  return log_in(application, kerberos)
+
+@app.route('/auth/<application_id>/impersonate', methods=['POST'])
+def handle_impersonate_request(application_id):
+  application = Application.find_by_id(application_id)
+  kerberos = request.form['kerberos']
+  return log_in(application, kerberos)

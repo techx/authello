@@ -28,7 +28,7 @@ class Application(db.Model):
   access_logs = db.relationship('AccessLog', back_populates='application')
 
   @classmethod
-  def find_by_id(cls, id):
+  def find_by_id(cls, id, unsafe_lookup=False):
     if not is_valid_application_id(id):
       return None
     results = Application.query.filter(Application.id == id).all()
@@ -36,7 +36,7 @@ class Application(db.Model):
       return None
     assert len(results) == 1
     result = results[0]
-    if result.owner != g.current_owner and not g.is_admin:
+    if not unsafe_lookup and result.owner != g.current_owner and not g.is_admin:
       return None
     return result
 

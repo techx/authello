@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="page-header">
-  <h1>Manage your apps</h1>
+  <h1>Manage your apps - Admin Panel</h1>
 </div>
 
 <table class="table table-striped">
@@ -11,6 +11,7 @@
       <th>Application Name</th>
       <th>Application ID</th>
       <th>Return URL</th>
+      <th>Impersonate</th>
       <th>Delete</th>
     </tr>
   </thead>
@@ -24,9 +25,20 @@
           <td>
             <form
               inline
+              action="{{ url_for('handle_impersonate_request', application_id=application.id) }}"
+              method="POST"
+              class="form form-inline"
+              style="margin: 0">
+              <input type="text" name="kerberos" class="form-control" placeholder="user's kerberos" />
+              <button type="submit" class="btn">Impersonate</button>
+            </form>
+          </td>
+          <td>
+            <form
+              inline
               action="{{ url_for('delete_application', application_id=application.id) }}"
               method="POST"
-              onsubmit="return confirm('Are you sure?')"
+              onsubmit="return confirm('Are you sure? This will permanently prevent future logins to this application.')"
               style="margin: 0">
               <button type="submit" class="btn btn-danger">Delete</button>
             </form>
@@ -35,7 +47,7 @@
       {% endfor %}
     {% else %}
       <tr>
-        <td colspan="4">You don't have any applications yet. Make one below!</td>
+        <td colspan="5">You don't have any applications yet. Make one below!</td>
       </tr>
     {% endif %}
   </tbody>

@@ -48,4 +48,3 @@ def application_log(application_id):
   if result == "":
     result = "No information to display!"
   return Response(result, mimetype='text/plain')
-

@@ -46,7 +46,7 @@ def calculate_token(kerberos, cur_time, secret):
 
 # Checks if a token returned from authello.mit.edu is valid
 def verify_token(kerberos, req_time, token):
-  if abs(int(req_time) - time.time()) > 2:
+  if abs(int(req_time) - time.time()) > 300: # tokens are valid for 5 minutes.
     return False, 'Token is too old'
   ctoken = calculate_token(kerberos, req_time, APPLICATION_SECRET)
   if ctoken != token:
